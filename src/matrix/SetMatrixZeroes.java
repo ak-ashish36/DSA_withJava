@@ -67,7 +67,37 @@ public class SetMatrixZeroes {
      * Time: O(m*n*(m+n)), Space: O(1) but modifies with placeholder.
      */
     public static void setZeroesBrute(int[][] matrix) {
+        int m = matrix.length;
+        int n = matrix[0].length;
 
+        // First pass: mark rows and cols
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (matrix[i][j] == 0) {
+                    // Mark current row
+                    for (int k = 0; k < n; k++) {
+                        if (matrix[i][k] != 0) {
+                            matrix[i][k] = -1;
+                        }
+                    }
+                    // Mark current col
+                    for (int k = 0; k < m; k++) {
+                        if (matrix[k][j] != 0) {
+                            matrix[k][j] = -1;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Second pass: set to 0
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (matrix[i][j] == -1) {
+                    matrix[i][j] = 0;
+                }
+            }
+        }
     }
 
     /**
@@ -77,7 +107,27 @@ public class SetMatrixZeroes {
      * Time: O(m*n), Space: O(m+n).
      */
     public static void setZeroesBetter(int[][] matrix) {
-        // TODO: implement row/col marker arrays
+        int row = matrix.length;
+        int col = matrix[0].length;
+        int[] rows = new int[row];
+        int[] cols = new int[col];
+
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                if (matrix[i][j] == 0) {
+                    rows[i] = -1;
+                    cols[j] = -1;
+                }
+            }
+        }
+
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                if (rows[i] == -1 || cols[j] == -1) {
+                    matrix[i][j] = 0;
+                }
+            }
+        }
     }
 
     /**
@@ -87,7 +137,56 @@ public class SetMatrixZeroes {
      * Time: O(m*n), Space: O(1).
      */
     public static void setZeroesOptimal(int[][] matrix) {
-        // TODO: implement in-place marker approach
+        int m = matrix.length;
+        int n = matrix[0].length;
+        boolean firstRowZero = false, firstColZero = false;
+
+        // Check if first row has zero
+        for (int j = 0; j < n; j++) {
+            if (matrix[0][j] == 0) {
+                firstRowZero = true;
+                break;
+            }
+        }
+        // Check if first col has zero
+        for (int i = 0; i < m; i++) {
+            if (matrix[i][0] == 0) {
+                firstColZero = true;
+                break;
+            }
+        }
+
+        // Use first row and col as markers
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                if (matrix[i][j] == 0) {
+                    matrix[i][0] = 0;// mark col
+                    matrix[0][j] = 0;// mark row
+                }
+            }
+        }
+
+        // Zero cells based on markers
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                if (matrix[i][0] == 0 || matrix[0][j] == 0) {
+                    matrix[i][j] = 0;
+                }
+            }
+        }
+
+        // Zero first row if needed
+        if (firstRowZero) {
+            for (int j = 0; j < n; j++) {
+                matrix[0][j] = 0;
+            }
+        }
+        // Zero first col if needed
+        if (firstColZero) {
+            for (int i = 0; i < m; i++) {
+                matrix[i][0] = 0;
+            }
+        }
     }
 
     // ===== Helper Functions =====
